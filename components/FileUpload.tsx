@@ -6,8 +6,20 @@ import { Upload, FolderOpen } from "lucide-react";
 import { uploadFile } from "@/lib/supabase/supbaseStorage";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
+type View = "Upload" | "Preview";
 
-export default function FileUpload() {
+interface ProjectInfoProps {
+  collapse: boolean;
+  setActiveView: (value: View) => void;
+  setCollapse: (value: boolean) => void;
+  setUploadSuccess:(value:boolean)=>void;
+}
+
+export default function FileUpload({
+  setCollapse,
+  setActiveView,
+  setUploadSuccess,
+}: ProjectInfoProps) {
   const [files, setFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<{ [key: string]: string }>({});
   const [error, setError] = useState<string | null>(null);
@@ -30,6 +42,7 @@ export default function FileUpload() {
       setError(`File rejected: ${fileRejections[0].errors[0].message}`);
       return;
     }
+    setCollapse(false);
     setFiles((prev) => [...prev, ...acceptedFiles]);
   };
 
@@ -71,7 +84,7 @@ export default function FileUpload() {
       } else {
         setError(null);
       }
-
+      setCollapse(false);
       setFiles((prev) => [...prev, ...filteredFiles]);
       setSuccessMessage(null);
     };
@@ -147,8 +160,11 @@ export default function FileUpload() {
 
     if (!error) {
       setSuccessMessage("All files uploaded successfully! ");
+      setTimeout(() => {
+      setUploadSuccess(true);
+        setActiveView("Preview");
+      }, 1500);
     }
-
     setFiles([]);
     setUploading(false);
   };
@@ -192,6 +208,25 @@ export default function FileUpload() {
           (JPG, JPEG, PNG, JSON, CSV )
         </p>
       </div>
+      <div className="w-full flex flex-col gap-2">
+        <label className="text-xs text-gray-500">
+          Import from cloud/public repositories
+        </label>
+
+        <div className="flex">
+          <input
+            type="text"
+            placeholder="Paste URL here..."
+            className="flex-1 px-3 py-2 border border-gray-300 rounded-l-md text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+          />
+          <button
+            type="button"
+            className="px-4 py-2 bg-gray-200  text-sm font-medium rounded-r-md hover:bg-gray-300"
+          >
+            Import
+          </button>
+        </div>
+      </div>
 
       {error && <p className="text-red-600 text-sm">{error}</p>}
 
@@ -222,7 +257,7 @@ export default function FileUpload() {
               disabled={uploading}
               className="px-6 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 disabled:opacity-50 transition"
             >
-              {uploading ? "Uploading..." : "Save and Upload Files"}
+              {"Save & Upload"}
             </button>
 
             <button

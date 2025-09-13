@@ -37,7 +37,7 @@ export default function FileGallery({
         const mapped: RemoteFile[] = fetched.map((f) => {
           const ext = (f.name.split(".").pop() || "").toLowerCase();
           let type = "other";
-          if (["png", "jpg", "jpeg", "gif", "webp"].includes(ext))
+          if (["png", "jpg", "jpeg"].includes(ext))
             type = "image";
           else if (["csv", "json"].includes(ext)) type = ext;
           return { ...f, type };

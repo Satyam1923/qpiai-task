@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { FileText, File as FileIcon, X, RefreshCw } from "lucide-react";
 
+
 interface FilePreviewProps {
   file: File;
   previewUrl?: string;
